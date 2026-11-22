@@ -181,7 +181,7 @@ para(doc, "In Chinese adults aged ≥45 years, incident stroke was associated wi
 
 # ---------- STATEMENTS (Karger order) ----------
 h1(doc, "Acknowledgement")
-para(doc, "The authors thank the CHARLS research team and all participants.")
+para(doc, "The authors thank the CHARLS research team and all participants. During the preparation of this work, the authors used Kimi K2 (Moonshot AI; accessed October–November 2026) to assist with generating and debugging R and Python analysis code, drafting and language-editing manuscript text, and preparing tables, figures, and submission documents. The authors reviewed and edited all output and take full responsibility for the content of this publication, including the accuracy of the data, analyses, and conclusions.")
 
 h1(doc, "Statement of Ethics")
 para(doc, "CHARLS was approved by the Biomedical Ethics Review Committee of Peking University (approval number IRB00001052-11015), and written informed consent was obtained from all participants at enrolment. This secondary analysis used de-identified, publicly available data.")
@@ -347,6 +347,9 @@ i1 = txts.index("Introduction")
 abs_wc = sum(len(t.split()) for t in txts[i0 + 1:i1])
 print("MANUSCRIPT WORDS (excl. tables file):", total_wc)
 print("ABSTRACT WORDS (incl. headings):", abs_wc)
+i_ack = txts.index("Acknowledgement")
+main_wc = sum(len(t.split()) for t in txts[i1 + 1:i_ack])
+print("MAIN TEXT WORDS (Introduction..Conclusions):", main_wc)
 first_seen = []
 for p in d.paragraphs:
     if re.match(r"^\d{1,2} [A-Z]", p.text.strip()):
