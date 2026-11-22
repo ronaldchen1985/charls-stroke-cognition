@@ -48,6 +48,7 @@ Run from the repository root. Steps 1–8 produce every number in the manuscript
 | 7 | `code/R5_fg_final.R` | **Fine–Gray models** (memory/global × −1/−1.5 SD thresholds = primary + S10), proportionality test, E-values (incl. √HR approximation), cumulative incidence at 2/5/8 y, STROBE flow counts → `R5_fg_final.csv` |
 | 8 | `code/V6_fg_fulladj.R` | S12: fully adjusted Fine–Gray (survival::finegray + cluster-robust coxph) → `V6_fg_fulladj.csv` |
 | 9 | `code/V5_resid_diag.R`, `code/V5b_resid_refit.R` | Residual diagnostics reported in Methods (skewness/kurtosis, 4-SD refit) |
+| 9b | `code/V9_practice_interact.R`, `code/V9b_interact_1df.R` | S13: testing-occasion (practice-effect) adjustment → `V9_practice_s13.csv`; step-specific 1-df interaction tests (sex/age/education) → `V9_step_interactions_1df.csv` |
 | 10 | `code/V8_descriptives.R` | Descriptive numbers quoted in Results/Table 1 → `V8_descriptives.txt` |
 | 11 | `code/F7_table1_EN.R` | Table 1 (baseline characteristics) → `Table1_EN_raw.csv` |
 | 12 | `code/R6_figures.R`, `code/H2_composite_figs.R`, `code/H3_fig4_fig3.R` | Figures 1–4 (PNG, converted to 600-dpi TIFF in step 13) |

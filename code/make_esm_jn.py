@@ -114,6 +114,9 @@ rows.append(["S9: Multiple imputation of covariates (m=20, chained equations)", 
 rows.append(["S10: Global-cognition PSCI definition", "see Table S2", "—"])
 r = r2[(r2.model == "spline: z_wrmean") & (r2.term == "stroke")].iloc[0]
 rows.append(["S11: Level-shift (continuous-spline) parameterization", fmt(r.est, r.lo, r.hi), pf(r.p)])
+s13 = pd.read_csv(OUT + r"\output\V9_practice_s13.csv")
+r = s13[(s13.model == "S13_visit_adj") & (s13.term == "step")].iloc[0]
+rows.append(["S13: Adjustment for testing occasion (visit number)", fmt(r.est, r.lo, r.hi), pf(r.p)])
 add_table_block(
  "Table S3. Acute memory change at stroke onset across sensitivity analyses",
  rows,
@@ -139,14 +142,19 @@ add_table_block(
 
 # S5
 p20 = pd.read_csv(OUT + r"\output\R3b_pseudo20_step_z_wrmean.csv")
-rows = [["Draw", "Estimate, SD", "95% CI", "P"]]
+rows = [["Draw", "Memory estimate, SD", "95% CI", "P"]]
 for _, r in p20.iterrows():
     rows.append([int(r.draw), f"{r.est:.3f}", f"{r.lo:.3f} to {r.hi:.3f}", pf(r.p)])
+g20 = pd.read_csv(OUT + r"\output\R3b_pseudo20_step_z_glob.csv")
+for _, r in g20.iterrows():
+    rows.append([int(r.draw), f"{r.est:.3f}", f"{r.lo:.3f} to {r.hi:.3f}", pf(r.p)])
 add_table_block(
- "Table S5. Twenty independent pseudo-anchor draws: acute memory change estimates (step model)",
+ "Table S5. Twenty independent pseudo-anchor draws: acute change estimates (step model; rows 1–20 episodic memory, rows 21–40 global cognition)",
  rows,
- f"Across draws: mean {p20.est.mean():.3f} SD, range {p20.est.min():.3f} to {p20.est.max():.3f}; "
- "all P≤9e-8. For global cognition, the step estimate ranged −0.207 to −0.199 SD (all P≤2.4e-6).")
+ f"Memory across draws: mean {p20.est.mean():.3f} SD, range {p20.est.min():.3f} to {p20.est.max():.3f}, all P≤9e-8 "
+ f"(primary estimate −0.192 SD). Global cognition across draws: mean {g20.est.mean():.3f} SD, "
+ f"range {g20.est.min():.3f} to {g20.est.max():.3f}, all P≤5.8e-6 (primary estimate −0.215 SD). "
+ "The primary model uses one random anchor assignment (fixed seed); the 20 draws assess stability under independent re-assignments.")
 
 if story and isinstance(story[-1], PageBreak):
     story.pop()

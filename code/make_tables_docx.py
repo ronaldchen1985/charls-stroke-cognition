@@ -71,7 +71,7 @@ fn = doc.add_paragraph()
 fn.add_run('CES-D 10 indicates 10-item Center for Epidemiologic Studies Depression scale (range 0–30, higher = more depressive symptoms). '
            'Chronic diseases are self-reported physician diagnoses at the 2011 baseline. '
            'Education categories follow the CHARLS bd001 codebook. '
-           'Education data were missing for 22 participants, smoking data for 614, and each chronic-disease item for ≤22; percentages are computed among non-missing responses; '
+           'Education data were missing for 22 participants, smoking data for 614, and chronic-disease items for 84 (hypertension), 141 (diabetes), 313 (dyslipidemia), and 69 (heart disease); percentages are computed among non-missing responses and may not sum to 100% owing to rounding; '
            'missing alcohol responses (n=26) were assigned to "None" in regression models. '
            '*Body-mass index from physical measurement (missing n=3,648); its P value is computed among participants with measured BMI; '
            'missingness was handled by an indicator variable in primary models and by multiple imputation in S9. '
