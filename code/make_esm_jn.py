@@ -140,21 +140,37 @@ add_table_block(
  "Differential attrition (older, cognitively lower, higher mortality among those without post-stroke measurements) "
  "is expected to bias post-stroke slope estimates toward the null.")
 
-# S5
+# S5 (compact style so both panels + footnote fit one page)
 p20 = pd.read_csv(OUT + r"\output\R3b_pseudo20_step_z_wrmean.csv")
-rows = [["Draw", "Memory estimate, SD", "95% CI", "P"]]
+g20 = pd.read_csv(OUT + r"\output\R3b_pseudo20_step_z_glob.csv")
+rows = [["Draw", "Episodic memory estimate, SD", "95% CI", "P"]]
 for _, r in p20.iterrows():
     rows.append([int(r.draw), f"{r.est:.3f}", f"{r.lo:.3f} to {r.hi:.3f}", pf(r.p)])
-g20 = pd.read_csv(OUT + r"\output\R3b_pseudo20_step_z_glob.csv")
+rows.append(["Draw", "Global-cognition estimate, SD", "95% CI", "P"])
 for _, r in g20.iterrows():
     rows.append([int(r.draw), f"{r.est:.3f}", f"{r.lo:.3f} to {r.hi:.3f}", pf(r.p)])
-add_table_block(
- "Table S5. Twenty independent pseudo-anchor draws: acute change estimates (step model; rows 1–20 episodic memory, rows 21–40 global cognition)",
- rows,
+story.append(Paragraph(
+ "Table S5. Twenty independent pseudo-anchor draws: acute change estimates (step model), "
+ "for episodic memory (upper panel) and global cognition (lower panel)", st_title))
+hdr_idx = {0, 21}
+data = [[Paragraph(str(v), st_cellb if i in hdr_idx else st_cell) for v in row] for i, row in enumerate(rows)]
+t = Table(data, colWidths=[CW * 0.10, CW * 0.38, CW * 0.32, CW * 0.20], repeatRows=1)
+t.setStyle(TableStyle([
+    ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor("#999999")),
+    ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#eaf0f6")),
+    ("BACKGROUND", (0, 21), (-1, 21), colors.HexColor("#eaf0f6")),
+    ("VALIGN", (0, 0), (-1, -1), "TOP"),
+    ("TOPPADDING", (0, 0), (-1, -1), 1.2),
+    ("BOTTOMPADDING", (0, 0), (-1, -1), 1.2),
+]))
+story.append(t)
+story.append(Paragraph(
  f"Memory across draws: mean {p20.est.mean():.3f} SD, range {p20.est.min():.3f} to {p20.est.max():.3f}, all P≤9e-8 "
  f"(primary estimate −0.192 SD). Global cognition across draws: mean {g20.est.mean():.3f} SD, "
  f"range {g20.est.min():.3f} to {g20.est.max():.3f}, all P≤5.8e-6 (primary estimate −0.215 SD). "
- "The primary model uses one random anchor assignment (fixed seed); the 20 draws assess stability under independent re-assignments.")
+ "The primary model uses one random anchor assignment (fixed seed); the 20 draws assess stability under independent re-assignments.",
+ st_foot))
+story.append(PageBreak())
 
 if story and isinstance(story[-1], PageBreak):
     story.pop()

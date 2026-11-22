@@ -147,9 +147,9 @@ rows = [["Draw", "Global-cognition estimate, SD", "95% CI", "P"]]
 for _, r in g20.iterrows():
     rows.append([int(r.draw), f"{r.est:.3f}", f"{r.lo:.3f} to {r.hi:.3f}", pf(r.p)])
 add_table(rows)
-foot(f"Memory across draws: mean {p20.est.mean():.3f} SD, range {p20.est.min():.3f} to {p20.est.max():.3f}, all P≤9×10⁻⁸ "
+foot(f"Memory across draws: mean {p20.est.mean():.3f} SD, range {p20.est.min():.3f} to {p20.est.max():.3f}, all P≤9e-8 "
      f"(primary estimate −0.192 SD). Global cognition across draws: mean {g20.est.mean():.3f} SD, "
-     f"range {g20.est.min():.3f} to {g20.est.max():.3f}, all P≤5.8×10⁻⁶ (primary estimate −0.215 SD). "
+     f"range {g20.est.min():.3f} to {g20.est.max():.3f}, all P≤5.8e-6 (primary estimate −0.215 SD). "
      "The primary model uses one random anchor assignment (fixed seed); the 20 draws assess stability "
      "under independent re-assignments.")
 

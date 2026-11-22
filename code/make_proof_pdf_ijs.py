@@ -18,7 +18,7 @@ def footer(canvas, doc):
     canvas.setFillColor(P.colors.HexColor("#777777"))
     canvas.drawCentredString(PAGE_W / 2, 10 * mm, str(doc.page))
     canvas.drawString(MARGIN, PAGE_H - 12 * mm,
-                      "Int J Stroke submission package - proofreading copy (2026-11-19)")
+                      "Int J Stroke submission package - proofreading copy (2026-11-22)")
     canvas.restoreState()
 
 def main():
