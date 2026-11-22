@@ -2,7 +2,7 @@
 
 Analysis code for the manuscript submitted to the *International Journal of Stroke* (2026).
 
-**Study**: Piecewise linear mixed-effects models with an acute step at stroke onset (four cognitive domains) and Fine–Gray competing-risk models for incident post-stroke cognitive impairment (PSCI), using all five cognitive waves of the China Health and Retirement Longitudinal Study (CHARLS), 2011–2023.
+**Study**: Piecewise linear mixed-effects models with an acute step at stroke onset (four cognitive domains) and Fine–Gray competing-risk models for incident post-stroke cognitive impairment (PSCI), using all six cognitive waves of the China Health and Retirement Longitudinal Study (CHARLS), 2011–2023 (the 2020 cognitive battery is recorded in the Health Status and Functioning module).
 
 **Authors**: Gan Zhang, Can Sun (co-first), Qingli Sun, Yong Chen (corresponding, ronaldchen@bjmu.edu.cn), Department of Neurology, Peking University Third Hospital, Beijing, China.
 

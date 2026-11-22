@@ -5,19 +5,19 @@
 ## ============================================================================
 options(width = 200)
 suppressPackageStartupMessages({library(haven); library(dplyr)})
-root <- Sys.getenv("CHARLS_DATA", "D:/CHARLS")  # parent dir of CHARLS wave folders (2011/, 2013/, ...); out <- Sys.getenv("PROJ_ROOT", getwd())  # run from repository root
+root <- Sys.getenv("CHARLS_DATA", "D:/CHARLS")  # parent dir of CHARLS wave folders (2011/, 2013/, ...)
+out <- Sys.getenv("PROJ_ROOT", getwd())  # run from repository root
 say <- function(...) cat(format(Sys.time(), "[%H:%M:%S]"), ..., "\n")
 
 rd <- function(...) haven::read_dta(file.path(root, ...))
 harm_id <- function(id) { id <- as.character(id)
   ifelse(nchar(id) == 12 & substr(id, 10, 10) == "0",
          paste0(substr(id, 1, 9), substr(id, 11, 12)), id) }
+## 2026-11-22 修复: 全部槽位缺失(未测/代理)必须判 NA, 不得计 0 (旧版把 proxies 计为 0 分)
 cnt_words <- function(d, vars) {
   m <- sapply(vars, function(v) { x <- d[[v]]; if (is.null(x)) rep(NA_real_, nrow(d)) else as.numeric(x) })
-  rowSums(!is.na(m) & m >= 1 & m <= 10) }
-cnt_words18 <- function(d, vars) {
-  m <- sapply(vars, function(v) { x <- d[[v]]; if (is.null(x)) rep(NA_real_, nrow(d)) else as.numeric(x) })
-  ok <- rowSums(!is.na(m)) > 0; s <- rowSums(m == 1, na.rm = TRUE); s[!ok] <- NA; s }
+  ok <- rowSums(!is.na(m)) > 0
+  s <- rowSums(!is.na(m) & m >= 1 & m <= 10); s[!ok] <- NA; s }
 yes1 <- function(x) { x <- as.numeric(x); ifelse(is.na(x), NA, as.integer(x == 1)) }
 
 ## ---------- 1) 2011 基线 ----------
@@ -66,22 +66,30 @@ c13 <- data.frame(ID11 = harm_id(h13$ID), wr_i = cnt_words(h13, paste0("dc006_1_
                   wr_d = cnt_words(h13, paste0("dc027s", 1:11)))
 c15 <- data.frame(ID11 = harm_id(h15$ID), wr_i = cnt_words(h15, paste0("dc006s", 1:12)),
                   wr_d = cnt_words(h15, paste0("dc027s", 1:12)))
-c18 <- data.frame(ID11 = harm_id(g18$ID), wr_i = cnt_words18(g18, paste0("dc028_w4_s", 1:10)),
-                  wr_d = cnt_words18(g18, paste0("dc047_w4_s", 1:10)))
+## 2026-11-22 修复: 2018 槽位值是回忆序号(1-10), 旧版 ==1 只数了"第1个回忆的词"
+c18 <- data.frame(ID11 = harm_id(g18$ID), wr_i = cnt_words(g18, paste0("dc028_w4_s", 1:10)),
+                  wr_d = cnt_words(g18, paste0("dc047_w4_s", 1:10)))
+## 2026-11-22 新增: 2020 波认知 (HCAP版, 词表在 Health_Status 内; dc012=即时trial1, dc028=延迟)
+h20c <- rd("2020/Health_Status_and_Functioning.dta")
+c20 <- data.frame(ID11 = harm_id(h20c$ID), wr_i = cnt_words(h20c, paste0("dc012_s", 1:13)),
+                  wr_d = cnt_words(h20c, paste0("dc028_s", 1:12)))
 read_x <- function(yr) { d <- rd(paste0(yr, "/Cognition_Depression.dta"))
   data.frame(ID11 = harm_id(d$ID), wr_i = as.numeric(d$xscorewr),
              wr_d = as.numeric(d$xscoredr), wrmean = as.numeric(d$xscorewrmean),
              mmse = as.numeric(d$xscoremmse)) }
 c21 <- read_x(2021); c22 <- read_x(2022); c23 <- read_x(2023)
-for (cc in c("c11", "c13", "c15", "c18"))
+for (cc in c("c11", "c13", "c15", "c18", "c20"))
   { d <- get(cc); d$wrmean <- (d$wr_i + d$wr_d)/2; d$mmse <- NA_real_; assign(cc, d) }
 wave_yr <- c("2011" = 2011.5, "2013" = 2013.5, "2015" = 2015.5, "2018" = 2018.5,
-             "2021" = 2021.6, "2022" = 2022.5, "2023" = 2023.5)
+             "2020" = 2020.5, "2021" = 2021.6, "2022" = 2022.5, "2023" = 2023.5)
 cog_long <- bind_rows(c11 %>% mutate(wave = "2011"), c13 %>% mutate(wave = "2013"),
                       c15 %>% mutate(wave = "2015"), c18 %>% mutate(wave = "2018"),
+                      c20 %>% mutate(wave = "2020"),
                       c21 %>% mutate(wave = "2021"), c22 %>% mutate(wave = "2022"),
                       c23 %>% mutate(wave = "2023")) %>%
   mutate(tyr = wave_yr[wave]) %>% filter(!is.na(wrmean)) %>% distinct(ID11, wave, .keep_all = TRUE)
+## 2026-11-22 验证门: 各波词回忆均值应与文献锚点一致 (2011-15 即时~4/延迟~3; 2018 3.2/4.3; 2020 3.6/5.1)
+print(cog_long %>% group_by(wave) %>% summarise(n = n(), wr_i = round(mean(wr_i), 2), wr_d = round(mean(wr_d), 2)))
 
 ## ---------- 3) 卒中: 状态 + 首诊年细化 ----------
 comb <- function(a, b) { a <- yes1(a); b <- yes1(b)

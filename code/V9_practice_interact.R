@@ -61,25 +61,6 @@ print(rbind(r0, r1))
 write.csv(rbind(r0, r1), file.path(out, "output/V9_practice_s13.csv"), row.names = FALSE)
 
 ## ---------- (2) 1-df step 交互 ----------
-cat("\n== 1-df step 交互 Wald 检验 ==\n")
-i_sex <- fit_ext(c(covs, "tau", "step", "stroke:pre_tau", "stroke:post_tau",
-                   "step:factor(sex)", "stroke:pre_tau:factor(sex)", "stroke:post_tau:factor(sex)"),
-                 "sex", terms = "step:factor(sex)2")
-i_age <- fit_ext(c(covs, "tau", "step", "stroke:pre_tau", "stroke:post_tau",
-                   "step:agegrp", "stroke:pre_tau:agegrp", "stroke:post_tau:agegrp"),
-                 "age", terms = grep("^step:agegrp", rownames(summary(lmer(reformulate(
-                   c(covs, "tau", "step", "stroke:pre_tau", "stroke:post_tau", "step:agegrp",
-                     "stroke:pre_tau:agegrp", "stroke:post_tau:agegrp", "(1 + tau | ID11)"),
-                   response = "z_wrmean"), data = d %>% filter(!is.na(z_wrmean)), REML = FALSE,
-                   control = lmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2e5))))$coefficients, value = TRUE))
-i_edu <- fit_ext(c(covs, "tau", "step", "stroke:pre_tau", "stroke:post_tau",
-                   "step:edu_any", "stroke:pre_tau:edu_any", "stroke:post_tau:edu_any"),
-                 "education", terms = grep("^step:edu_any", rownames(summary(lmer(reformulate(
-                   c(covs, "tau", "step", "stroke:pre_tau", "stroke:post_tau", "step:edu_any",
-                     "stroke:pre_tau:edu_any", "stroke:post_tau:edu_any", "(1 + tau | ID11)"),
-                   response = "z_wrmean"), data = d %>% filter(!is.na(z_wrmean)), REML = FALSE,
-                   control = lmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 2e5))))$coefficients, value = TRUE))
-ii <- bind_rows(i_sex, i_age, i_edu)
-print(ii)
-write.csv(ii, file.path(out, "output/V9_step_interactions_1df.csv"), row.names = FALSE)
+## 注：1-df step 交互 Wald 检验由 V9b_interact_1df.R 独立完成
+## （输出 output/V9_step_interactions_1df.csv），本脚本不再重复。
 cat("\nV9 done\n")

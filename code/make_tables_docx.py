@@ -1,6 +1,3 @@
-import os
-OUT = os.environ.get("PROJ_ROOT", os.getcwd())  # run from repository root
-os.makedirs(os.path.join(OUT, "manuscript"), exist_ok=True)
 ## 生成 Tables.docx: 修订版 (阶跃参数化 + 教育切点修正)
 from docx import Document
 from docx.shared import Pt, Cm
@@ -68,10 +65,9 @@ for i, row in enumerate(t1_rows):
         set_cell(t.rows[i].cells[j], v, bold=(i == 0), align='left' if j == 0 else 'center')
 add_hline(t, 0); add_hline(t, len(t1_rows) - 1)
 fn = doc.add_paragraph()
-fn.add_run('CES-D 10 indicates 10-item Center for Epidemiologic Studies Depression scale (range 0–30, higher = more depressive symptoms). '
+fn.add_run('CES-D 10 = 10-item Center for Epidemiologic Studies Depression scale. '
            'Chronic diseases are self-reported physician diagnoses at the 2011 baseline. '
-           'Education categories follow the CHARLS bd001 codebook. '
-           'Education data were missing for 22 participants, smoking data for 614, and chronic-disease items for 84 (hypertension), 141 (diabetes), 313 (dyslipidemia), and 69 (heart disease); percentages are computed among non-missing responses and may not sum to 100% owing to rounding; '
+           'Education data were missing for 22 participants and smoking data for 614; percentages are computed among non-missing responses; '
            'missing alcohol responses (n=26) were assigned to "None" in regression models. '
            '*Body-mass index from physical measurement (missing n=3,648); its P value is computed among participants with measured BMI; '
            'missingness was handled by an indicator variable in primary models and by multiple imputation in S9. '
@@ -84,10 +80,10 @@ doc.add_paragraph('Table 2. Peri-Stroke Cognitive Trajectory by Domain: Piecewis
 
 t2_rows = [
     ("Trajectory parameter", "Memory (primary), z", "Immediate recall, z", "Delayed recall, z", "TICS-10, z", "Visuospatial, z", "Global cognition, z"),
-    ("Background slope, SD per year (stroke-free)", "\u22120.0137 (\u22120.0156 to \u22120.0117)\u2021", "\u22120.0138 (\u22120.0158 to \u22120.0119)\u2021", "\u22120.0107 (\u22120.0127 to \u22120.0087)\u2021", "\u22120.0033 (\u22120.0059 to \u22120.0007)*", "\u22120.0013 (\u22120.0038 to 0.0011)", "\u22120.0055 (\u22120.0080 to \u22120.0029)\u2021"),
-    ("Acute step at stroke onset, SD", "\u22120.192 (\u22120.262 to \u22120.122)\u2021", "\u22120.206 (\u22120.276 to \u22120.135)\u2021", "\u22120.132 (\u22120.204 to \u22120.060)\u2021", "\u22120.149 (\u22120.241 to \u22120.057)\u2020", "\u22120.098 (\u22120.189 to \u22120.008)*", "\u22120.215 (\u22120.307 to \u22120.122)\u2021"),
-    ("Pre-stroke slope difference, SD per year", "0.012 (0.004 to 0.019); P=0.003", "0.012 (0.004 to 0.019); P=0.003", "0.010 (0.002 to 0.018); P=0.012", "0.015 (0.005 to 0.025); P=0.004", "0.005 (\u22120.004 to 0.015); P=0.272", "0.017 (0.007 to 0.028); P<0.001"),
-    ("Post-stroke slope difference, SD per year", "0.011 (\u22120.008 to 0.029); P=0.248", "0.018 (\u22120.001 to 0.037); P=0.058", "0.002 (\u22120.017 to 0.021); P=0.863", "\u22120.009 (\u22120.033 to 0.016); P=0.493", "0.005 (\u22120.019 to 0.029); P=0.693", "0.002 (\u22120.022 to 0.026); P=0.892"),
+    ("Background slope, SD per year (stroke-free)", "\u22120.001 (\u22120.003 to 0.001)", "\u22120.001 (\u22120.003 to 0.001)", "\u22120.001 (\u22120.003 to 0.001)", "\u22120.004 (\u22120.007 to \u22120.002)\u2021", "\u22120.001 (\u22120.003 to 0.001)", "\u22120.006 (\u22120.008 to \u22120.004)\u2021"),
+    ("Acute step at stroke onset, SD", "\u22120.122 (\u22120.186 to \u22120.058)\u2021", "\u22120.136 (\u22120.201 to \u22120.071)\u2021", "\u22120.087 (\u22120.152 to \u22120.022)\u2020", "\u22120.175 (\u22120.259 to \u22120.092)\u2021", "\u22120.092 (\u22120.174 to \u22120.011)*", "\u22120.186 (\u22120.270 to \u22120.103)\u2021"),
+    ("Pre-stroke slope difference, SD per year", "0.016 (0.007 to 0.024); P<0.001", "0.017 (0.009 to 0.026); P<0.001", "0.012 (0.004 to 0.021); P=0.004", "0.016 (0.006 to 0.027); P=0.002", "0.004 (\u22120.005 to 0.014); P=0.377", "0.018 (0.008 to 0.029); P<0.001"),
+    ("Post-stroke slope difference, SD per year", "\u22120.012 (\u22120.028 to 0.005); P=0.168", "\u22120.002 (\u22120.019 to 0.015); P=0.835", "\u22120.016 (\u22120.033 to 0.001); P=0.065", "\u22120.003 (\u22120.025 to 0.020); P=0.810", "0.005 (\u22120.017 to 0.027); P=0.652", "\u22120.002 (\u22120.024 to 0.020); P=0.849"),
 ]
 t = doc.add_table(rows=len(t2_rows), cols=7)
 t.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -97,17 +93,16 @@ for i, row in enumerate(t2_rows):
 add_hline(t, 0); add_hline(t, len(t2_rows) - 1)
 fn = doc.add_paragraph()
 fn.add_run('Values are fixed-effect estimates (95% CI) from piecewise linear mixed-effects models with time anchored at stroke onset. '
-           'A step term (0 before, 1 at/after onset) captures the acute change, following prior HRS and COSMIC analyses; '
+           'A step term (0 before, 1 at/after onset) captures the acute change, following prior REGARDS and COSMIC analyses; '
            'stroke-by-slope interactions estimate pre-/post-stroke slope differences; stroke-free participants received pseudo-anchor times '
            'drawn from the case event-time distribution. Models include participant-level random intercepts and slopes and adjust for '
            'baseline age, sex, education, marital status, CES-D 10, smoking, alcohol use, hypertension, diabetes, dyslipidemia, heart disease, and body-mass index. '
-           'z scores standardized within each interview year (residuals from regression on age [natural spline, 3 df], education, and sex). '
-           'TICS-10 = orientation (5 items) + serial-7 subtraction (5 items); visuospatial = figure copying; global = mean of memory, TICS-10, and visuospatial z scores, rescaled. '
-           'The step parameterization improved fit over a level-shift (continuous-spline) parameterization (\u0394AIC \u2248 17 for memory). '
-           'Analytic sample sizes (participants): memory 14,276 (57,272 person-waves; 1,197 incident strokes in the analytic sample); TICS-10 9,757; visuospatial 10,173; global 9,722. '
+           'z scores standardized within each interview year (residuals from regression on age [natural spline, 3 df], education, and sex); domain definitions as in Methods. '
+           'The step parameterization improved fit over a level-shift (continuous-spline) parameterization (\u0394AIC 4.8 for memory, 8.7 for global cognition). '
+           'Analytic sample sizes (participants): memory 13,974 (62,962 person-waves; 1,187 incident strokes in the analytic sample); TICS-10 9,593; visuospatial 9,968; global 9,563. '
            'The acute memory change was the prespecified primary hypothesis; all other P values are nominal (no multiplicity adjustment). '
            'Positive pre-stroke slope differences denote slower decline in stroke survivors relative to stroke-free participants; negative differences would denote accelerated decline. '
            '*P<0.05; \u2020P<0.01; \u2021P<0.001.').font.size = Pt(8.5)
 
-doc.save(os.path.join(OUT, "manuscript", "Tables.docx"))
+doc.save(r'D:\CHARLS\PSCI_traj\manuscript\Tables.docx')
 print('saved Tables.docx')

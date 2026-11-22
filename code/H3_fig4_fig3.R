@@ -73,35 +73,38 @@ pg <- gridExtra::arrangeGrob(p4, pnr, ncol = 1, heights = c(4, 1))
 ggsave(file.path(out, "figures/Fig4_cif_psci_EN.png"), pg, width = 7.5, height = 5.6, dpi = 600)
 say("Fig4 CIF 曲线完成")
 
-## ---- Fig3: 增加 S9 (MI) 行 ----
-sens <- read.csv(file.path(out, "output/F3_subgroup_sensitivity.csv"))
-main <- read.csv(file.path(out, "output/F2_main_keycoef.csv")); main$analysis <- "Primary model (fully adjusted)"
-labmap <- c("亚组: 女性" = "Women", "亚组: 男性" = "Men",
-            "亚组: 基线<65岁" = "Baseline age <65 y", "亚组: 基线≥65岁" = "Baseline age ≥65 y",
-            "亚组: 低教育" = "No formal education", "亚组: 中高教育" = "Any formal education",
-            "敏感S1: 纯中点插值" = "S1: Midpoint-only event timing",
-            "敏感S2: 排除2018窗口事件" = "S2: Excluding 2018-window events",
-            "敏感S3: 仅用2020年前事件" = "S3: Pre-2020 events only",
-            "敏感S4: BMI完整病例" = "S4: BMI complete cases",
-            "敏感S5: 仅人口学校正" = "S5: Demographics-only adjustment",
-            "S6: W6去重(每人第六轮仅一次)" = "S6: First sixth-wave assessment only",
-            "S7 baseline-standardized: zb_wrmean" = "S7: Baseline-distribution standardization",
-            "S8: 排除疑似复发卒中" = "S8: Excluding possible recurrent stroke")
-s6 <- read.csv(file.path(out, "output/S6_w6dedup.csv"))
-g2b <- read.csv(file.path(out, "output/G2_domain_models.csv"))
-s7 <- g2b %>% filter(model == "S7 baseline-standardized: zb_wrmean", term == "stroke")
-s8 <- read.csv(file.path(out, "output/G3a_s8_recurrent.csv"))
-mi <- read.csv(file.path(out, "output/G6_mi_pooled.csv")) %>%
-  filter(term == "stroke") %>%
-  transmute(analysis = "S9: Multiple imputation of covariates", est, lo, hi)
-ss <- bind_rows(main %>% filter(term == "stroke") %>% transmute(analysis, est, lo, hi),
-                sens %>% filter(term == "stroke") %>% transmute(analysis, est, lo, hi),
-                s6 %>% filter(term == "stroke") %>% transmute(analysis, est, lo, hi),
-                s7 %>% transmute(analysis = model, est, lo, hi),
-                s8 %>% filter(term == "stroke") %>% transmute(analysis, est, lo, hi),
-                mi)
-ss$analysis <- unname(ifelse(ss$analysis %in% names(labmap), labmap[ss$analysis], ss$analysis))
-ss$group <- c("Primary", rep("Subgroups", 6), rep("Sensitivity analyses", 9))
+## ---- Fig3: 森林图（2026-11-22 重建：改用 R 管线新输出 + S13）----
+r2  <- read.csv(file.path(out, "output/R2_main_step.csv"))
+r3  <- read.csv(file.path(out, "output/R3_subgroup_sens_step.csv"))
+mi  <- read.csv(file.path(out, "output/R4_mi20_pooled.csv"))
+s13 <- read.csv(file.path(out, "output/V9_practice_s13.csv"))
+spline_row <- r2 %>% filter(model == "spline: z_wrmean", term == "stroke")
+ss <- bind_rows(
+  r2 %>% filter(model == "step: z_wrmean", term == "step") %>%
+    transmute(analysis = "Primary model (fully adjusted)", est, lo, hi),
+  r3 %>% filter(term == "step") %>% transmute(analysis, est, lo, hi),
+  mi %>% filter(term == "step") %>%
+    transmute(analysis = "S9: Multiple imputation of covariates (m=20)", est, lo, hi),
+  spline_row %>% transmute(analysis = "S11: Level-shift (spline) parameterization", est, lo, hi),
+  s13 %>% filter(model == "S13_visit_adj", term == "step") %>%
+    transmute(analysis = "S13: Testing-visit number adjustment", est, lo, hi))
+name_map <- c("Subgroup: women" = "Women", "Subgroup: men" = "Men",
+              "Subgroup: baseline age <65 y" = "Baseline age <65 y",
+              "Subgroup: baseline age >=65 y" = "Baseline age \u226565 y",
+              "Subgroup: no formal education" = "No formal education",
+              "Subgroup: any formal education" = "Any formal education",
+              "S1: midpoint imputation only" = "S1: Midpoint-only event timing",
+              "S2: exclude 2015-2018-window events" = "S2: Excluding 2015\u20132018-window events",
+              "S3: pre-2020 events only" = "S3: Pre-2020 events only",
+              "S4: BMI complete cases" = "S4: BMI complete cases",
+              "S5: demographics-only adjustment" = "S5: Demographics-only adjustment",
+              "S6: first sixth-wave assessment only" = "S6: First sixth-wave assessment only",
+              "S7: baseline-standardized, memory" = "S7: Baseline-distribution standardization",
+              "S8: exclude possible recurrent stroke" = "S8: Excluding possible recurrent stroke")
+ss$analysis <- unname(ifelse(ss$analysis %in% names(name_map), name_map[ss$analysis], ss$analysis))
+ss <- ss %>% filter(!grepl("TICS-assessed", analysis),
+                    !(analysis == "S7: baseline-standardized, global"))
+ss$group <- c("Primary", rep("Subgroups", 6), rep("Sensitivity analyses", nrow(ss) - 7))
 ss$analysis <- factor(ss$analysis, levels = rev(ss$analysis))
 theme_for <- theme_classic(base_size = 12, base_family = "sans") +
   theme(legend.position = "top", legend.title = element_blank(),

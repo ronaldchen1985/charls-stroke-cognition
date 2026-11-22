@@ -5,7 +5,8 @@
 ## ============================================================================
 options(width = 200)
 suppressPackageStartupMessages({library(haven); library(dplyr); library(lme4)})
-root <- Sys.getenv("CHARLS_DATA", "D:/CHARLS")  # parent dir of CHARLS wave folders (2011/, 2013/, ...); out <- Sys.getenv("PROJ_ROOT", getwd())  # run from repository root
+root <- Sys.getenv("CHARLS_DATA", "D:/CHARLS")  # parent dir of CHARLS wave folders (2011/, 2013/, ...)
+out <- Sys.getenv("PROJ_ROOT", getwd())  # run from repository root
 say <- function(...) cat(format(Sys.time(), "[%H:%M:%S]"), ..., "\n")
 con <- file(file.path(out, "output/R3_log.txt"), open = "wt"); sink(con, split = TRUE)
 set.seed(20261115)

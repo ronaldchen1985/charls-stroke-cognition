@@ -34,17 +34,15 @@ for (k in seq_along(domains)) {
   df$grp <- factor(df$grp, levels = c("Stroke-free", "Incident stroke"))
   jump <- data.frame(y0 = b_tau * 0 + gpre * 0 - sh, y1 = b_tau * 0 + st - sh)
   acute_txt <- sprintf("Acute step: %.3f SD (%.3f to %.3f)", st, a_lo, a_hi)
-  ymin_k <- min(df$y); rng_k <- diff(range(df$y)); if (rng_k < 0.05) rng_k <- 0.05
   panels[[k]] <- ggplot(df, aes(tau, y, color = grp, linetype = grp)) +
     geom_vline(xintercept = 0, linetype = 3, color = "grey60", linewidth = 0.4) +
     geom_line(linewidth = 0.9) +
     geom_segment(data = jump, aes(x = 0, xend = 0, y = y0, yend = y1),
                  color = "#D55E00", linewidth = 0.9, linetype = 1, inherit.aes = FALSE) +
-    annotate("text", x = -9.7, y = ymin_k - 0.05 * rng_k, label = acute_txt,
+    annotate("text", x = -9.7, y = min(df$y) * 0.92, label = acute_txt,
              hjust = 0, size = 3.0, color = "grey20") +
     scale_color_manual(values = c("#0072B2", "#D55E00")) +
     scale_linetype_manual(values = c(2, 1)) +
-    coord_cartesian(ylim = c(ymin_k - 0.14 * rng_k, NA)) +
     labs(title = paste0(LETTERS[k], ". ", dnames[k]),
          x = "Years from stroke onset / anchor (\u03c4)", y = "z score (shifted)") +
     theme_pub
@@ -56,7 +54,6 @@ say("Fig1 阶跃轨迹图完成")
 ## ---------- Figure 3: 森林图 (新电池) ----------
 r3 <- read.csv(file.path(out, "output/R3_subgroup_sens_step.csv"))
 mi <- read.csv(file.path(out, "output/R4_mi20_pooled.csv"))
-s13 <- read.csv(file.path(out, "output/V9_practice_s13.csv"))
 spline_row <- r2 %>% filter(model == "spline: z_wrmean", term == "stroke")
 rows <- bind_rows(
   r2 %>% filter(model == "step: z_wrmean", term == "step") %>%
@@ -66,8 +63,9 @@ rows <- bind_rows(
   mi %>% filter(term == "step") %>%
     transmute(analysis = "S9: Multiple imputation of covariates (m=20)", est, lo, hi),
   spline_row %>% transmute(analysis = "S11: Level-shift (spline) parameterization", est, lo, hi),
-  s13 %>% filter(model == "S13_visit_adj", term == "step") %>%
-    transmute(analysis = "S13: Adjustment for testing occasion", est, lo, hi))
+  read.csv(file.path(out, "output/V9_practice_s13.csv")) %>%
+    filter(model == "S13_visit_adj", term == "step") %>%
+    transmute(analysis = "S13: Testing-visit number adjustment", est, lo, hi))
 name_map <- c("Subgroup: women" = "Women", "Subgroup: men" = "Men",
               "Subgroup: baseline age <65 y" = "Baseline age <65 y",
               "Subgroup: baseline age >=65 y" = "Baseline age \u226565 y",
@@ -126,11 +124,11 @@ p4 <- ggplot(curve, aes(t, cif, color = grp)) +
   scale_color_manual(values = c("#D55E00", "#0072B2")) +
   scale_y_continuous(labels = scales::percent_format(accuracy = 1), limits = c(0, NA)) +
   scale_x_continuous(breaks = seq(0, 8, 2)) +
-  annotate("text", x = 7.95, y = 0.475, label = "8-y: 43.1%", color = "#D55E00", size = 3.4, hjust = 1) +
-  annotate("text", x = 7.95, y = 0.285, label = "8-y: 33.4%", color = "#0072B2", size = 3.4, hjust = 1) +
-  annotate("text", x = 7.95, y = 0.03, label = "Adjusted sHR 1.41 (95% CI 1.21\u20131.64)",
+  annotate("text", x = 7.95, y = 0.475, label = "8-y: 43.6%", color = "#D55E00", size = 3.4, hjust = 1) +
+  annotate("text", x = 7.95, y = 0.30, label = "8-y: 36.4%", color = "#0072B2", size = 3.4, hjust = 1) +
+  annotate("text", x = 7.95, y = 0.03, label = "Adjusted sHR 1.26 (95% CI 1.08\u20131.47)",
            color = "grey20", size = 3.4, hjust = 1) +
-  labs(x = "Years from stroke onset / pseudo-anchor",
+  labs(x = "Years from stroke onset / matched anchor",
        y = "Cumulative incidence of PSCI") +
   theme_pub4
 nr_long <- data.frame(t = rep(nr$t, 2),

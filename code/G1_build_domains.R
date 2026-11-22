@@ -13,7 +13,8 @@
 ## ============================================================================
 options(width = 200)
 suppressPackageStartupMessages({library(haven); library(dplyr)})
-root <- Sys.getenv("CHARLS_DATA", "D:/CHARLS")  # parent dir of CHARLS wave folders (2011/, 2013/, ...); out <- Sys.getenv("PROJ_ROOT", getwd())  # run from repository root
+root <- Sys.getenv("CHARLS_DATA", "D:/CHARLS")  # parent dir of CHARLS wave folders (2011/, 2013/, ...)
+out <- Sys.getenv("PROJ_ROOT", getwd())  # run from repository root
 say <- function(...) cat(format(Sys.time(), "[%H:%M:%S]"), ..., "\n")
 harm_id <- function(id) { id <- as.character(id)
   ifelse(nchar(id) == 12 & substr(id, 10, 10) == "0",
@@ -83,14 +84,28 @@ extr_22 <- function(yr) {
   data.frame(ID11 = harm_id(d$ID), orient, serial, visuo)
 }
 
+## --- 2020 (2026-11-22 新增; 认知并入 Health_Status; 1=对 2=错 997/999=未测) ---
+extr_20 <- function() {
+  d <- read_dta(file.path(root, "2020/Health_Status_and_Functioning.dta"))
+  ov <- c("dc001", "dc005", "dc003", "dc004", "dc002")  # 年/月/日/星期/季节
+  om <- sapply(ov, function(v) { x <- num(d[[v]]); ifelse(x == 1, 1, ifelse(x == 2, 0, NA_real_)) })
+  orient <- rowSums(om, na.rm = TRUE); orient[rowSums(!is.na(om)) == 0] <- NA
+  s7 <- sapply(paste0("dc007_", 1:5, "_1"), function(v) num(d[[v]]))  # 具体作答数值
+  s7ok <- !is.na(s7) & sweep(s7, 2, S7A, `==`)
+  serial <- rowSums(s7ok); serial[rowSums(!is.na(s7)) == 0] <- NA
+  x <- num(d$dc009); visuo <- ifelse(x == 1, 1, ifelse(x == 2, 0, NA_real_))
+  data.frame(ID11 = harm_id(d$ID), orient, serial, visuo)
+}
+
 d11 <- extr_old("2011/health_status_and_functioning.dta") %>% mutate(wave = "2011")
 d13 <- extr_old("2013/Health_Status_and_Functioning.dta") %>% mutate(wave = "2013")
 d15 <- extr_old("2015/Health_Status_and_Functioning.dta") %>% mutate(wave = "2015")
 d18 <- extr_18() %>% mutate(wave = "2018")
+d20 <- extr_20() %>% mutate(wave = "2020")
 d21 <- extr_21(2021) %>% mutate(wave = "2021")
 d22 <- extr_22(2022) %>% mutate(wave = "2022")
 d23 <- extr_22(2023) %>% mutate(wave = "2023")
-dom <- bind_rows(d11, d13, d15, d18, d21, d22, d23) %>%
+dom <- bind_rows(d11, d13, d15, d18, d20, d21, d22, d23) %>%
   mutate(tics = ifelse(is.na(orient) | is.na(serial), NA_real_, orient + serial))
 
 say("各波 TICS/视空间 有效n:")

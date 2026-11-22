@@ -7,7 +7,7 @@ from reportlab.platypus import (BaseDocTemplate, PageTemplate, Frame, Paragraph,
                                 Spacer, PageBreak, NextPageTemplate)
 import make_proof_pdf as P
 
-BASE = os.path.join(os.environ.get("PROJ_ROOT", os.getcwd()), "submission_IJS")
+BASE = r"D:\CHARLS\PSCI_traj\submission_IJS"
 OUT = os.path.join(BASE, "IJS_Submission_Package_Proof.pdf")
 MARGIN = 20 * mm
 PAGE_W, PAGE_H = A4
@@ -60,11 +60,11 @@ def main():
 
     add_section("5. Supplementary Material 1 (Tables S1-S5)",
                 "Supplementary_Material_1.pdf -> rendered from docx source",
-                P.docx_story(os.path.join(os.environ.get("PROJ_ROOT", os.getcwd()), "manuscript", "Supplementary_Tables.docx")))
+                P.docx_story(r"D:\CHARLS\PSCI_traj\manuscript\Supplementary_Tables.docx"))
     story.append(Paragraph("6. Supplementary Material 2 (Fig. S1)", P.styles["divider"]))
     story.append(Paragraph("Supplementary_Material_2.pdf", P.styles["dividersub"]))
     story.append(PageBreak())
-    story.extend(P.figure_story(os.path.join(os.environ.get("PROJ_ROOT", os.getcwd()), "figures", "FigS1_flow_EN.png"),
+    story.extend(P.figure_story(r"D:\CHARLS\PSCI_traj\figures\FigS1_flow_EN.png",
                                 "Fig. S1  STROBE flow diagram"))
     story.append(PageBreak())
     add_section("7. STROBE Checklist", "STROBE_checklist_IJS.docx",

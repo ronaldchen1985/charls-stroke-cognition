@@ -1,14 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Supplementary tables S1-S5 (docx) — 修订版 (阶跃参数化 + FG 末次测点删失)"""
-import os
+"""Supplementary tables S1-S5 (docx) — 2026-11-22 rebuild (2020 wave + scoring fixes)"""
 import pandas as pd
 from docx import Document
 from docx.shared import Pt, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
 
-OUT = os.environ.get("PROJ_ROOT", os.getcwd())  # run from repository root
-os.makedirs(os.path.join(OUT, "output"), exist_ok=True)
+OUT = r"D:\CHARLS\PSCI_traj"
 
 doc = Document()
 st = doc.styles["Normal"]; st.font.name = "Times New Roman"; st.font.size = Pt(10)
@@ -39,17 +37,17 @@ pf = lambda p: f"{p:.1e}" if p < 0.001 else f"{p:.3f}"
 # ---------------- S1: included vs excluded ----------------
 title("Table S1. Characteristics of participants included in vs excluded from the trajectory analysis sample")
 rows = [
- ["Characteristic", "Included (n=14,276)", "Excluded (n=2,088)"],
- ["Age at baseline, y (mean)", "59.1", "60.1"],
- ["Women, %", "52.0", "46.6"],
- ["No formal education, %", "26.5", "32.6"],
- ["Hypertension, %", "23.8", "23.2"],
- ["Incident stroke during follow-up, %", "8.4", "7.1"],
- ["Died during follow-up, %", "14.6", "17.9"],
+ ["Characteristic", "Included (n=13,974)", "Excluded (n=2,390)"],
+ ["Age at baseline, y (mean)", "58.9", "61.4"],
+ ["Women, %", "52.1", "46.8"],
+ ["No formal education, %", "25.9", "34.8"],
+ ["Hypertension, %", "23.6", "23.6"],
+ ["Incident stroke during follow-up, %", "8.5", "6.7"],
+ ["Died during follow-up, %", "14.1", "20.8"],
 ]
 add_table(rows)
 foot("Exclusion was due to absence of any cognitive measurement or incomplete baseline covariates. "
-     "Multiple imputation (analysis S9, m=20) re-included these participants and yielded a concordant acute estimate (−0.181 SD).")
+     "Multiple imputation (analysis S9, m=20) re-included these participants and yielded a concordant acute estimate (−0.127 SD).")
 
 # ---------------- S2: FG by definition ----------------
 doc.add_page_break()
@@ -75,9 +73,11 @@ foot("sHR = subdistribution hazard ratio (death as competing event), adjusted fo
      "Participants entered the risk set at the anchor only if ≥1 post-anchor cognitive measurement was available; "
      "event-free survivors were censored at their last post-anchor measurement, and deaths (from exit interviews) were "
      "treated as competing events at the imputed death date. "
-     "Proportional subdistribution hazards assumption supported (stroke × log(time) P=0.47 for the primary definition; 0.30–0.89 for others). "
+     "Proportional subdistribution hazards assumption (stroke × log(time)): supported for the primary and global-cognition "
+     "definitions (P=0.19, 0.40, 0.53) but not for the memory −1.5-SD threshold (P=0.02); that estimate should be read as an "
+     "average over follow-up. "
      "CIF: cumulative incidence function. "
-     "Table P values are Fine–Gray model Wald P; the Gray test of CIF equality gave P=0.0004 for the primary definition. "
+     "Table P values are Fine–Gray model Wald P; the Gray test of CIF equality gave P=0.003 for the primary definition. "
      "S12 rows were fitted with the Fine–Gray weighting (coxph) implementation and cluster-robust standard errors, "
      "adjusting for the full covariate set of the trajectory models (age, sex, education, marital status, CES-D 10, "
      "smoking, alcohol use, hypertension, diabetes, dyslipidemia, heart disease, body-mass index).")
@@ -88,6 +88,7 @@ title("Table S3. Acute memory change at stroke onset across sensitivity analyses
 r2 = pd.read_csv(OUT + r"\output\R2_main_step.csv")
 r3 = pd.read_csv(OUT + r"\output\R3_subgroup_sens_step.csv")
 mi = pd.read_csv(OUT + r"\output\R4_mi20_pooled.csv")
+s13 = pd.read_csv(OUT + r"\output\V9_practice_s13.csv")
 rows = [["Analysis", "Acute change, SD (95% CI)", "P"]]
 r = r2[(r2.model == "step: z_wrmean") & (r2.term == "step")].iloc[0]
 rows.append(["Primary model (step parameterization, fully adjusted)", fmt(r.est, r.lo, r.hi), pf(r.p)])
@@ -107,13 +108,12 @@ rows.append(["S9: Multiple imputation of covariates (m=20, chained equations)", 
 rows.append(["S10: Global-cognition PSCI definition", "see Table S2", "—"])
 r = r2[(r2.model == "spline: z_wrmean") & (r2.term == "stroke")].iloc[0]
 rows.append(["S11: Level-shift (continuous-spline) parameterization", fmt(r.est, r.lo, r.hi), pf(r.p)])
-s13 = pd.read_csv(OUT + r"\output\V9_practice_s13.csv")
 r = s13[(s13.model == "S13_visit_adj") & (s13.term == "step")].iloc[0]
-rows.append(["S13: Adjustment for testing occasion (visit number)", fmt(r.est, r.lo, r.hi), pf(r.p)])
+rows.append(["S13: Adjustment for testing-visit number (practice effects)", fmt(r.est, r.lo, r.hi), pf(r.p)])
 add_table(rows)
 foot("Estimates from piecewise linear mixed-effects models for episodic memory z score with an acute step at stroke onset. "
      "The step parameterization improved model fit over the continuous level-shift (spline) parameterization "
-     "(ΔAIC ≈ 17 for memory, 14 for global cognition). "
+     "(ΔAIC 4.8 for memory, 8.7 for global cognition). "
      "The positive pre-stroke slope differences observed in some models (main text) are interpreted descriptively; "
      "they indicate no evidence of accelerated pre-stroke decline.")
 
@@ -121,37 +121,30 @@ foot("Estimates from piecewise linear mixed-effects models for episodic memory z
 doc.add_page_break()
 title("Table S4. Stroke survivors with vs without post-stroke cognitive measurements")
 rows = [
- ["Characteristic", "With post-stroke measurement (n=1,135)", "Without post-stroke measurement (n=211)", "P"],
- ["Age at baseline, y (mean)", "59.8", "65.5", "<0.001"],
- ["Baseline memory z score (mean)", "0.004", "−0.238", "<0.001"],
- ["Women, %", "51.3", "52.1", "0.88"],
- ["Died during follow-up, %", "11.9", "32.7", "<0.001"],
+ ["Characteristic", "With post-stroke measurement (n=1,150)", "Without post-stroke measurement (n=196)", "P"],
+ ["Age at baseline, y (mean)", "59.5", "67.7", "<0.001"],
+ ["Baseline memory z score (mean)", "−0.07", "−0.24", "0.045"],
+ ["Women, %", "51.1", "53.1", "0.67"],
+ ["Died during follow-up, %", "11.0", "39.8", "<0.001"],
 ]
 add_table(rows)
-foot("Among all 1,346 incident stroke cases (irrespective of covariate completeness), 1,135 (84.3%) had at least one "
-     "post-stroke cognitive measurement; 211 had none. "
-     "Within the covariate-complete analytic sample (1,197 stroke cases), 1,019 had at least one post-stroke measurement. "
+foot("Among all 1,346 incident stroke cases (irrespective of covariate completeness), 1,150 (85.4%) had at least one "
+     "post-stroke cognitive measurement; 196 had none. "
+     "Within the covariate-complete analytic sample (1,187 stroke cases), 1,039 had at least one post-stroke measurement "
+     "and 999 had at least one pre- and one post-stroke measurement. "
      "Differential attrition (older, cognitively lower, higher mortality among those without post-stroke measurements) "
      "is expected to bias post-stroke slope estimates toward the null.")
 
 # ---------------- S5: pseudo-anchor draws ----------------
 doc.add_page_break()
-title("Table S5. Twenty independent pseudo-anchor draws: acute change estimates (step model)")
+title("Table S5. Twenty independent pseudo-anchor draws: acute memory change estimates (step model)")
 p20 = pd.read_csv(OUT + r"\output\R3b_pseudo20_step_z_wrmean.csv")
-rows = [["Draw", "Memory estimate, SD", "95% CI", "P"]]
+rows = [["Draw", "Estimate, SD", "95% CI", "P"]]
 for _, r in p20.iterrows():
     rows.append([int(r.draw), f"{r.est:.3f}", f"{r.lo:.3f} to {r.hi:.3f}", pf(r.p)])
 add_table(rows)
-g20 = pd.read_csv(OUT + r"\output\R3b_pseudo20_step_z_glob.csv")
-rows = [["Draw", "Global-cognition estimate, SD", "95% CI", "P"]]
-for _, r in g20.iterrows():
-    rows.append([int(r.draw), f"{r.est:.3f}", f"{r.lo:.3f} to {r.hi:.3f}", pf(r.p)])
-add_table(rows)
-foot(f"Memory across draws: mean {p20.est.mean():.3f} SD, range {p20.est.min():.3f} to {p20.est.max():.3f}, all P≤9e-8 "
-     f"(primary estimate −0.192 SD). Global cognition across draws: mean {g20.est.mean():.3f} SD, "
-     f"range {g20.est.min():.3f} to {g20.est.max():.3f}, all P≤5.8e-6 (primary estimate −0.215 SD). "
-     "The primary model uses one random anchor assignment (fixed seed); the 20 draws assess stability "
-     "under independent re-assignments.")
+foot(f"Across draws: mean {p20.est.mean():.3f} SD, range {p20.est.min():.3f} to {p20.est.max():.3f}; "
+     "all P≤1.9×10⁻⁴. For global cognition, the step estimate ranged −0.216 to −0.214 SD (all P≤6×10⁻⁶).")
 
 doc.save(OUT + r"\manuscript\Supplementary_Tables.docx")
 print("supplementary tables saved")
