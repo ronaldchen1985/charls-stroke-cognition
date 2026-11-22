@@ -232,7 +232,7 @@ print("manuscript ok")
 # ============================================================
 cl = Document(); set_style(cl)
 cl.styles["Normal"].paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
-para(cl, "[Date]", justify=False)
+para(cl, "22 November 2026", justify=False)
 para(cl, "", justify=False)
 para(cl, "The Editors\nInternational Journal of Stroke", justify=False)
 para(cl, "", justify=False)
