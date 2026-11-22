@@ -3,7 +3,7 @@
 ## ============================================================================
 options(width = 200)
 suppressPackageStartupMessages({library(dplyr); library(ggplot2); library(gridExtra)})
-out <- Sys.getenv("PROJ_ROOT", getwd())  # run from repository root
+out <- "D:/CHARLS/PSCI_traj"
 say <- function(...) cat(format(Sys.time(), "[%H:%M:%S]"), ..., "\n")
 
 theme_pub <- theme_classic(base_size = 11, base_family = "sans") +
@@ -43,7 +43,7 @@ for (k in seq_along(domains)) {
              hjust = 0, size = 3.0, color = "grey20") +
     scale_color_manual(values = c("#0072B2", "#D55E00")) +
     scale_linetype_manual(values = c(2, 1)) +
-    labs(title = paste0(LETTERS[k], ". ", dnames[k]),
+    labs(title = paste0(letters[k], ". ", dnames[k]),
          x = "Years from stroke onset / anchor (\u03c4)", y = "z score (shifted)") +
     theme_pub
 }

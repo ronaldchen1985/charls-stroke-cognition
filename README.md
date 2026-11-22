@@ -1,6 +1,6 @@
 # Cognitive trajectories and risk of cognitive impairment after incident stroke: a 12-year nationwide cohort study in China
 
-Analysis code for the manuscript submitted to the *International Journal of Stroke* (2026).
+Analysis code for the manuscript submitted to *Cerebrovascular Diseases* (2026).
 
 **Study**: Piecewise linear mixed-effects models with an acute step at stroke onset (four cognitive domains) and Fine–Gray competing-risk models for incident post-stroke cognitive impairment (PSCI), using all six cognitive waves of the China Health and Retirement Longitudinal Study (CHARLS), 2011–2023 (the 2020 cognitive battery is recorded in the Health Status and Functioning module).
 
@@ -24,7 +24,7 @@ Set two environment variables (or run with the defaults shown):
 | Variable | Meaning | Default |
 |---|---|---|
 | `CHARLS_DATA` | Parent directory of the CHARLS wave folders | `D:/CHARLS` |
-| `PROJ_ROOT` | Repository root (intermediate CSVs, `output/`, `figures/`, `manuscript/`, `submission_IJS/` are read/written here) | current working directory |
+| `PROJ_ROOT` | Repository root (intermediate CSVs, `output/`, `figures/`, `manuscript/`, `submission_CED/` are read/written here) | current working directory |
 
 ## 2. Software requirements
 
@@ -53,8 +53,8 @@ Run from the repository root. Steps 1–8 produce every number in the manuscript
 | 11 | `code/F7_table1_EN.R` | Table 1 (baseline characteristics) → `Table1_EN_raw.csv` |
 | 12 | `code/R6_figures.R`, `code/H2_composite_figs.R`, `code/H3_fig4_fig3.R` | Figures 1–4 (PNG, converted to 600-dpi TIFF in step 13) |
 | 13 | `code/make_figS1.py`, `make_tables_docx.py`, `make_suppl_tables.py`, `make_esm_jn.py` | Fig. S1 flow diagram; Tables.docx; Supplementary Material 1 (Tables S1–S5) and 2 (Fig. S1) PDFs |
-| 14 | `code/make_submission_ijs.py` | Manuscript, cover letter, STROBE checklist, 600-dpi TIFFs → `submission_IJS/` (also prints word counts and citation-order check) |
-| 15 | `code/make_reviewers.py`, `code/make_proof_pdf_ijs.py` | Suggested reviewers; merged proofreading PDF |
+| 14 | `code/make_submission_ced.py` | Manuscript, cover letter, STROBE checklist, 600-dpi TIFFs → `submission_CED/` (Cerebrovascular Diseases package; also prints word counts and citation-order check). `code/make_submission_ijs.py` is retained for the earlier International Journal of Stroke package. |
+| 15 | `code/make_reviewers.py`, `code/make_proof_pdf.py` | Suggested reviewers; merged proofreading PDF |
 
 > Debugging/verification scratch scripts used during peer-review preparation (files prefixed `dbg_`, `V1`–`V5`, `R4dbg`) are intentionally **not** part of this repository; every reported number regenerates from the scripts above alone.
 

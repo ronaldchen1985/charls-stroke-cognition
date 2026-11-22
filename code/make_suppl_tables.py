@@ -143,8 +143,10 @@ rows = [["Draw", "Estimate, SD", "95% CI", "P"]]
 for _, r in p20.iterrows():
     rows.append([int(r.draw), f"{r.est:.3f}", f"{r.lo:.3f} to {r.hi:.3f}", pf(r.p)])
 add_table(rows)
+g20 = pd.read_csv(OUT + r"\output\R3b_pseudo20_step_z_glob.csv")
 foot(f"Across draws: mean {p20.est.mean():.3f} SD, range {p20.est.min():.3f} to {p20.est.max():.3f}; "
-     "all P≤1.9×10⁻⁴. For global cognition, the step estimate ranged −0.216 to −0.214 SD (all P≤6×10⁻⁶).")
+     f"all P≤1.9×10⁻⁴. For global cognition, the step estimate ranged {g20.est.min():.3f} to {g20.est.max():.3f} SD "
+     f"(all P≤{g20.p.max():.1e}).")
 
 doc.save(OUT + r"\manuscript\Supplementary_Tables.docx")
 print("supplementary tables saved")

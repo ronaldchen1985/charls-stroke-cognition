@@ -1,5 +1,5 @@
 suppressPackageStartupMessages(library(lme4))
-out <- Sys.getenv("PROJ_ROOT", getwd())  # run from repository root
+out <- "D:/CHARLS/PSCI_traj"
 mods <- readRDS(file.path(out, "output/R2_models.rds"))
 m <- mods$z_wrmean$m
 res <- character()

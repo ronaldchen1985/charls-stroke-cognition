@@ -5,7 +5,7 @@
 ## ============================================================================
 options(width = 200)
 suppressPackageStartupMessages({library(dplyr); library(lme4)})
-out <- Sys.getenv("PROJ_ROOT", getwd())  # run from repository root
+out <- "D:/CHARLS/PSCI_traj"
 say <- function(...) cat(format(Sys.time(), "[%H:%M:%S]"), ..., "\n")
 con <- file(file.path(out, "output/R2_log.txt"), open = "wt"); sink(con, split = TRUE)
 set.seed(20261115)

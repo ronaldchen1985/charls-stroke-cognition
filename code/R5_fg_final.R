@@ -4,7 +4,7 @@
 ## ============================================================================
 options(width = 200)
 suppressPackageStartupMessages({library(dplyr); library(cmprsk)})
-out <- Sys.getenv("PROJ_ROOT", getwd())  # run from repository root
+out <- "D:/CHARLS/PSCI_traj"
 logf <- file.path(out, "output/R5_log.txt"); if (file.exists(logf)) file.remove(logf)
 wlog <- function(...) cat(format(Sys.time(), "[%H:%M:%S]"), ..., "\n", file = logf, append = TRUE)
 set.seed(20261115)
