@@ -1,0 +1,19 @@
+# CHARLS raw data and derived person-level data (restricted)
+*.dta
+psci_baseline.csv
+psci_cog_long.csv
+psci_cog_long2.csv
+
+# analysis outputs (regenerable)
+output/
+figures/
+manuscript/
+submission_IJS/
+
+# R / Python noise
+*.rds
+*.RData
+.Rhistory
+__pycache__/
+*.pyc
+Rplots.pdf
