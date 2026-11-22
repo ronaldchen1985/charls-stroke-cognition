@@ -224,7 +224,7 @@ para(doc, [B("Figure 4. "), N("Cumulative incidence of post-stroke cognitive imp
 
 # ---------- SUPPLEMENTARY CAPTIONS ----------
 h1(doc, "Supplementary Material captions")
-para(doc, [B("Supplementary Material 1 "), N("(PDF): Tables S1–S5 (inclusion/exclusion comparison; Fine–Gray results by outcome definition; sensitivity analyses S1–S11; attrition comparison; pseudo-anchor draws).")], justify=False)
+para(doc, [B("Supplementary Material 1 "), N("(PDF): Tables S1–S5 (inclusion/exclusion comparison; Fine–Gray results by outcome definition; sensitivity analyses S1–S13; attrition comparison; pseudo-anchor draws).")], justify=False)
 para(doc, [B("Supplementary Material 2 "), N("(PDF): Fig. S1, STROBE participant flow diagram, including the PSCI analysis branch.")], justify=False)
 
 doc.save(os.path.join(SUB, "Manuscript_IJS.docx"))
